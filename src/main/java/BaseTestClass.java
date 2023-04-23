@@ -58,7 +58,7 @@ public class BaseTestClass implements BeforeAllCallback, BeforeTestExecutionCall
                 TakesScreenshot ts = (TakesScreenshot) driver;
                 File source = ts.getScreenshotAs(OutputType.FILE);
                 dest =  "/build/reports/screenshots/" + context.getDisplayName().replaceAll(" ","_") + ".jpg";
-                File destination = new File(dest);
+                File destination = new File( System.getProperty("user.dir") + dest);
                 FileUtils.copyFile(source, destination);
                 System.out.println("Screenshot taken at " + dest);
 
