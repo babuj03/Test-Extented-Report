@@ -14,11 +14,16 @@ repositories {
 dependencies {
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.4.2'
     compileOnly 'com.aventstack:extentreports:5.0.9'
-    compileOnly 'com.codeborne:selenide:5.3.1'
+    compileOnly 'com.codeborne:selenide:5.23.0'
     testImplementation('org.junit.jupiter:junit-jupiter:5.4.2')
-    testCompile 'com.codeborne:selenide:5.3.1'
     testCompile 'com.aventstack:extentreports:5.0.9'
+    testCompile 'com.codeborne:selenide:5.23.0'
+
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'ch.qos.logback:logback-classic:1.2.6'
 }
+
+
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
