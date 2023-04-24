@@ -6,24 +6,20 @@ import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
-import com.codeborne.selenide.ex.ElementShould;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.jupiter.api.extension.*;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 
-public class BaseExtentedReport implements BeforeAllCallback, BeforeTestExecutionCallback, AfterAllCallback, AfterTestExecutionCallback {
+public class BaseExtendedReport implements BeforeAllCallback, BeforeTestExecutionCallback, AfterAllCallback, AfterTestExecutionCallback {
     static ExtentReports reports;
     static ExtentTest test;
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseTestClass.class);
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
         String testClassName = context.getDisplayName();
@@ -32,7 +28,6 @@ public class BaseExtentedReport implements BeforeAllCallback, BeforeTestExecutio
         reports = new ExtentReports();
         reports.attachReporter(htmlReporter);
         Configuration.startMaximized = true;
-        Configuration.baseUrl = "https://ww.google.co.uk/";
         Configuration.screenshots=false;
 
     }
@@ -40,9 +35,6 @@ public class BaseExtentedReport implements BeforeAllCallback, BeforeTestExecutio
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
         test = reports.createTest(context.getDisplayName());
-
-        logger.info( context.getDisplayName() + " - started^^^^^^^^");
-
     }
 
 
@@ -52,12 +44,16 @@ public class BaseExtentedReport implements BeforeAllCallback, BeforeTestExecutio
             test.pass(context.getDisplayName() + " - passed");
         } else {
             String dest ="";
-            test.fail(context.getExecutionException().get().getLocalizedMessage());
+            if (context.getExecutionException().isPresent()) {
+                Throwable exception = context.getExecutionException().orElse(null);
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                test.fail("<pre style='max-height: 400px; overflow-y: auto'><font color='#800000'>"+stackTrace+"</font></pre>");
+            }
             WebDriver driver = WebDriverRunner.getWebDriver();
             try {
                 TakesScreenshot ts = (TakesScreenshot) driver;
                 File source = ts.getScreenshotAs(OutputType.FILE);
-                dest =  "/build/reports/screenshots/" + context.getDisplayName().replaceAll(" ","_") + ".jpg";
+                dest =  "/build/reports/screenshots/" + context.getDisplayName().replaceAll(" ","_") + ".png";
                 File destination = new File( System.getProperty("user.dir") + dest);
                 FileUtils.copyFile(source, destination);
                 System.out.println("Screenshot taken at " + dest);
@@ -65,19 +61,17 @@ public class BaseExtentedReport implements BeforeAllCallback, BeforeTestExecutio
             } catch (IOException e) {
                 System.out.println("Exception while taking screenshot " + e.getMessage());
             }
-            test.fail("screen shot", MediaEntityBuilder.createScreenCaptureFromPath(dest).build());
-      }
+            test.fail(
+                    "<font color='#800000'>Screen shot</font>", MediaEntityBuilder.createScreenCaptureFromPath(dest).build());
+
+        }
     }
-
-    //SelenideExtentReports/build/reports/screenshots
-
-
 
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
         reports.flush();
-        Selenide.close();
+        Selenide.closeWindow();
     }
 
 
