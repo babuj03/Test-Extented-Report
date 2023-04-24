@@ -2,18 +2,25 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.*;
 
-@ExtendWith(BaseTestClass.class)
+@ExtendWith(BaseExtendedReport.class)
 class ExtentReportsTest {
 
+    private static final Logger logger = LoggerFactory.getLogger(ExtentReportsTest.class);
+
     @Test
-    @DisplayName("Open Google URL")
+    @DisplayName("Open Google URL......")
     void openUrl() {
         String url = "https://ww.google.co.uk";
+        logger.info("************Before opeing url.................");
         open(url);
+        BaseExtendedReport.test.info("After opeing url.................");
+
     }
 
     @Test
