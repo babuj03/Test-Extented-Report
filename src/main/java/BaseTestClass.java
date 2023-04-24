@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 
-public class BaseTestClass implements BeforeAllCallback, BeforeTestExecutionCallback, AfterAllCallback, AfterTestExecutionCallback {
+public class BaseExtentedReport implements BeforeAllCallback, BeforeTestExecutionCallback, AfterAllCallback, AfterTestExecutionCallback {
     static ExtentReports reports;
     static ExtentTest test;
 
